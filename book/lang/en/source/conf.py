@@ -42,7 +42,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Survive The Deep End: PHP Security'
-copyright = '2012, Pádraic Brady'
+copyright = '2012, Padraic Brady'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -165,7 +165,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'SurviveTheDeepEndPHPSecuritydoc'
+htmlhelp_basename = 'SurviveTheDeepEndPHPSecurity'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -184,8 +184,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'SurviveTheDeepEndPHPSecurity.tex', 'Survive The Deep End: PHP Security Documentation',
-   'Pádraic Brady', 'manual'),
+  ('index', 'SurviveTheDeepEndPHPSecurity.tex', 'Survive The Deep End: PHP Security',
+   'Padraic Brady', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -214,8 +214,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'survivethedeependphpsecurity', 'Survive The Deep End: PHP Security Documentation',
-     ['Pádraic Brady'], 1)
+    ('index', 'survivethedeependphpsecurity', 'Survive The Deep End: PHP Security',
+     ['Padraic Brady'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -228,8 +228,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'SurviveTheDeepEndPHPSecurity', 'Survive The Deep End: PHP Security Documentation',
-   'Pádraic Brady', 'SurviveTheDeepEndPHPSecurity', 'One line description of project.',
+  ('index', 'SurviveTheDeepEndPHPSecurity', 'Survive The Deep End: PHP Security',
+   'Padraic Brady', 'SurviveTheDeepEndPHPSecurity', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -247,9 +247,9 @@ texinfo_documents = [
 
 # Bibliographic Dublin Core info.
 epub_title = 'Survive The Deep End: PHP Security'
-epub_author = 'Pádraic Brady'
-epub_publisher = 'Pádraic Brady'
-epub_copyright = '2012, Pádraic Brady'
+epub_author = 'Padraic Brady'
+epub_publisher = 'Padraic Brady'
+epub_copyright = '2012, Padraic Brady'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
