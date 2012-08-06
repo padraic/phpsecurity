@@ -11,12 +11,7 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
-    1.0-Introduction
-
-Introduction
-############
-
-* :doc:`1.0-Introduction` 
+    Introduction
 
 Indices and tables
 ++++++++++++++++++

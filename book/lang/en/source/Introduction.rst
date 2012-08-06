@@ -1,3 +1,9 @@
+Introduction
+############
+
+Yet Another PHP Security Book?
+==============================
+
 There are many ways to start a guide or book on PHP Security. Unfortunately, I haven't read any of them, so I have to make this up as I go along. So let's start at the beginning and hopefully it will make sense.
 
 If you consider a web application that has been pushed online by Company X, you can assume that there are many components under the boot that, if hacked, could cause significant damage. That damage may include:
