@@ -13,6 +13,7 @@
 # serve to show the default.
 
 import sys, os
+from datetime import datetime
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -42,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Survive The Deep End: PHP Security'
-copyright = '2012, Padraic Brady'
+copyright = unicode(datetime.utcnow().year) + u', Padraic Brady'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -93,6 +94,10 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = 'default'
+
+from sphinx.highlighting import lexers
+from pygments.lexers.web import PhpLexer
+lexers['php'] = PhpLexer(startinline=True)
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -249,7 +254,7 @@ texinfo_documents = [
 epub_title = 'Survive The Deep End: PHP Security'
 epub_author = 'Padraic Brady'
 epub_publisher = 'Padraic Brady'
-epub_copyright = '2012, Padraic Brady'
+epub_copyright = unicode(datetime.utcnow().year) + u', Padraic Brady'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
@@ -288,8 +293,3 @@ epub_copyright = '2012, Padraic Brady'
 
 # Example configuration for intersphinx: refer to the Python standard library.
 #intersphinx_mapping = {'http://docs.python.org/': None}
-
-# Hack to render the php source code without the <?php tag
-from sphinx.highlighting import lexers
-from pygments.lexers.web import PhpLexer
-lexers['php'] = PhpLexer(startinline=True)
