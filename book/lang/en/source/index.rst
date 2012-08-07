@@ -12,6 +12,7 @@ Contents:
     :maxdepth: 2
 
     Introduction
+    Input-Validation
 
 Indices and tables
 ++++++++++++++++++
