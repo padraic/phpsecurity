@@ -288,3 +288,8 @@ epub_copyright = '2012, Padraic Brady'
 
 # Example configuration for intersphinx: refer to the Python standard library.
 #intersphinx_mapping = {'http://docs.python.org/': None}
+
+# Hack to render the php source code without the <?php tag
+from sphinx.highlighting import lexers
+from pygments.lexers.web import PhpLexer
+lexers['php'] = PhpLexer(startinline=True)
