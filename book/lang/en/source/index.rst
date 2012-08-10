@@ -9,24 +9,11 @@ Survive The Deep End: PHP Security
 Contents:
 
 .. toctree::
-    :hidden:
     :maxdepth: 2
 
     Introduction
     Input-Validation
     Cross-Site-Scripting-(XSS)
-    includes/A-Cross-Site-Scripting-Example
-    includes/Cross-Site-Scripting-And-Injecting-Context
-    includes/Defending-Against-Cross-Site-Scripting
-    includes/Types-Of-Cross-Site-Scripting-Attacks
-    includes/What-Is-Cross-Site-Scripting
-
-Heading
--------
-
-    * :doc:`Introduction`
-    * :doc:`Input-Validation`
-    * :doc:`Cross-Site-Scripting-(XSS)`
 
 Indices and tables
 ++++++++++++++++++
