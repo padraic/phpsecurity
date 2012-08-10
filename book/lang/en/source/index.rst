@@ -15,15 +15,14 @@ Contents:
     Introduction
     Input-Validation
     Cross-Site-Scripting-(XSS)
-    A-Cross-Site-Scripting-Example
+    includes/A-Cross-Site-Scripting-Example
     includes/Cross-Site-Scripting-And-Injecting-Context
     includes/Defending-Against-Cross-Site-Scripting
     includes/Types-Of-Cross-Site-Scripting-Attacks
     includes/What-Is-Cross-Site-Scripting
-    includes/A-Cross-Site-Scripting-Example
 
-|IntroductiontoPHPSecurity|
------------------------------
+Heading
+-------
 
     * :doc:`Introduction`
     * :doc:`Input-Validation`
