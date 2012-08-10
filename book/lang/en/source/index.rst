@@ -16,10 +16,11 @@ Contents:
     Input-Validation
     Cross-Site-Scripting-(XSS)
     A-Cross-Site-Scripting-Example
-	 Cross-Site-Scripting-And-Injecting-Context
-	 Defending-Against-Cross-Site-Scripting
-	 Types-Of-Cross-Site-Scripting-Attacks
-	 What-Is-Cross-Site-Scripting
+    includes/Cross-Site-Scripting-And-Injecting-Context
+    includes/Defending-Against-Cross-Site-Scripting
+    includes/Types-Of-Cross-Site-Scripting-Attacks
+    includes/What-Is-Cross-Site-Scripting
+    includes/A-Cross-Site-Scripting-Example
 
 |IntroductiontoPHPSecurity|
 -----------------------------
