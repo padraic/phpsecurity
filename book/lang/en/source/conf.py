@@ -47,7 +47,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Survive The Deep End: PHP Security'
+project = u'Survive The Deep End: PHP Security'
 copyright = unicode(datetime.utcnow().year) + u', Padraic Brady'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -71,7 +71,9 @@ release = '1.0a1'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = []
+# Padraic: Exclude included files since they are merged into parent rst file but
+# need to be excluded as a 'source' file for the toctree.
+exclude_patterns = ['includes']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
@@ -88,7 +90,7 @@ exclude_patterns = []
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'colorful'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -98,7 +100,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+#html_theme = 'default'
 
 from sphinx.highlighting import lexers
 from pygments.lexers.web import PhpLexer
