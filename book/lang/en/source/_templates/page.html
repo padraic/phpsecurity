@@ -1,16 +1,33 @@
 {% extends "!page.html" %}
 
 {% block extrahead %}
-<style type="text/css">
-#ribbon a img {position: absolute; top: 2.5em; right: 0; border: 0;}
-</style>
+    <style type="text/css">
+    #ribbon a img {
+        position: absolute;
+        top: 2.5em;
+        right: 0;
+        border: 0;
+    }
+    pre {
+        background: none repeat scroll 0% 0% rgb(39, 40, 34);
+        line-height: 1.2em;
+        font-family: "InconsolataMedium",Monaco,"Courier New",monospace;
+        font-size: 1.0em;
+        color: white;
+        border-radius: 15px;
+        -moz-border-radius: 15px;
+        -webkit-border-radius: 15px;
+        -khtml-border-radius: 15px;
+        border: 1px solid rgb(136, 153, 170);
+    }
+    </style>
 {% endblock %}
 
 {% block footer %}
 {{ super() }}
-<div id="ribbon">
-    <a href="https://github.com/padraic/phpsecurity">
-        <img src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
-    </a>
-</div>
+    <div id="ribbon">
+        <a href="https://github.com/padraic/phpsecurity">
+            <img src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"/>
+        </a>
+    </div>
 {% endblock %}
