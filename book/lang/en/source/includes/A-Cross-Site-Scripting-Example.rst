@@ -16,6 +16,7 @@ This simple attack has a lot of repercussions including potentially gaining cont
 Of course, being a simple example, there is one flaw with the attacker's approach. Similar to examples using Javascript's alert() function I've presented something which has an obvious defense. All cookies containing sensitive data should be tagged with the HttpOnly flag which prevents Javascript from accessing the cookie data. The principle you should remember, however, is that if the attacker can inject Javascript, they can probably inject all conceivable Javascript. If they can't access the cookie and mount an attack using it directly, they will do what all good programmers would do: write an efficient automated attack.
 
 .. code-block:: html
+    :emphasize-lines: 4
 
      <script>
         var params = 'type=topic&action=delete&id=347';

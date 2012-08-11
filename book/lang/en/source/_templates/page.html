@@ -1,6 +1,7 @@
 {% extends "!page.html" %}
 
 {% block extrahead %}
+    <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
     <style type="text/css">
     #ribbon a img {
         position: absolute;
@@ -11,14 +12,16 @@
     pre {
         background: none repeat scroll 0% 0% rgb(39, 40, 34);
         line-height: 1.2em;
-        font-family: "InconsolataMedium",Monaco,"Courier New",monospace;
-        font-size: 1.0em;
+        font-family: "Inconsolata","InconsolataMedium",Monaco,"Courier New",monospace;
+        font-size: 1.1em;
         color: white;
         border-radius: 15px;
         -moz-border-radius: 15px;
         -webkit-border-radius: 15px;
         -khtml-border-radius: 15px;
         border: 1px solid rgb(136, 153, 170);
+        overflow-x: auto;
+        overflow-y: hidden;
     }
     </style>
 {% endblock %}

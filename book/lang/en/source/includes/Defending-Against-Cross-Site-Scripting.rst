@@ -76,17 +76,23 @@ Content-Security Policy
 The root element in all our discussions about Cross-Site Scripting has been that the browser unquestionably executes all the Javascript it receives from the server whether it be inline or externally sourced. On receipt of a HTML document, the browser has no means of knowing which of the resources it contains are innocent and which are malicious. What if we could change that?
  
 The Content-Security Policy (CSP) is a HTTP header which communicates a whitelist of trusted resource sources that the browser can trust. Any source not included in the whitelist can now be ignored by the browser since it's untrusted. Consider the following:
+
+::
  
     X-Content-Security-Policy: script-src 'self'
  
 This CSP header tells the browser to only trust Javascript source URLs pointing to the current domain. The browser will now grab scripts from this source but completely ignore all others. This means that http://attacker.com/naughty.js is not downloaded if injected by an attacker. It also means that all inline scripts, i.e. <script> tags, javascript: URIs or event attribute content are all ignored too since they are not in the whitelist.
  
 If we need to use Javascript from another source besides 'self', we can extend the whitelist to include it. For example, let's include jQuery's CDN address.
- 
+
+::
+
     X-Content-Security-Policy: script-src 'self' http://code.jquery.com
  
 You can add other resource directives, e.g. style-src for CSS, by dividing each resource directive and its whitelisting with a semi-colon.
  
+::
+
     X-Content-Security-Policy: script-src 'self' http://code.jquery.com; style-src 'self'
  
 The format of the header value is very simple. The value is constructed with a resource directive "script-src" followed by a space delimited list of sources to apply as a whitelist. The source can be a quoted keyword such as 'self' or a URL. The URL value is matched based on the information given. Information omitted in a URL can be freely altered in the HTML document. Therefore http://code.jquery.com prevents loading scripts from http://jquery.com or http://domainx.jquery.com because we were specific as to which subdomain to accept. If we wanted to allow all subdomains we could have specified just http://jquery.com. The same thinking applies to paths, ports, URL scheme, etc.
@@ -105,7 +111,9 @@ script-src: Limits the sources for script files.
 style-src: Limits the sources for CSS files.
  
 For maintaining secure defaults, there is also the special "default-src" directive that can be used to create a default whitelist for all of the above. For example:
- 
+
+::
+
     X-Content-Security-Policy: default-src 'self'; script-src 'self' http://code.jquery.com
  
 The above will limit the source for all resources to the current domain but add an exception for script-src to allow the jQuery CDN. This instantly shuts down all avenues for untrusted injected resources and allows is to carefully open up the gates to only those sources we want the browser to trust.
@@ -120,11 +128,15 @@ Besides URLs, the allowed sources can use the following keywords which must be e
 You'll notice the usage of the term "unsafe". The best way of applying the CSP is to not duplicate an attacker's practices. Attackers want to inject inline Javascript and other resources. If we avoid such inline practices, our web applications can tell browsers to ignore all such inlined resources without exception. We can do this using external script files and Javascript's addEventListener() function instead of event attributes. Of course, what's a rule without a few useful exceptions, right? Seriously, eliminate any exceptions. Setting 'unsafe-inline' as a whitelisting source just goes against the whole point of using a CSP.
  
 The 'none' keyword means just that. If set as a resource source it just tells the browser to ignore all resources of that type. Your mileage may vary but I'd suggest doing something like this so your CSP whitelist is always restricted to what it allows:
- 
+
+::
+
     X-Content-Security-Policy: default-src 'none'; script-src 'self' http://code.jquery.com; style-src 'self'
  
 Just one final quirk to be aware of. Since the CSP is an emerging solution not yet out of draft, you'll need to dumplicate the X-Content-Security-Policy header to ensure it's also picked up by WebKit browsers like Safari and Chrome. I know, I know, that's WebKit for you.
- 
+
+::
+
     X-Content-Security-Policy: default-src 'none'; script-src 'self' http://code.jquery.com; style-src 'self'
     X-WebKit-CSP: default-src 'none'; script-src 'self' http://code.jquery.com; style-src 'self'
 
