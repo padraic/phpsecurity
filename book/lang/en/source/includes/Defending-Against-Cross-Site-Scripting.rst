@@ -32,7 +32,7 @@ Never Inject Data Except In Allowed Locations
 
 Before presenting escaping strategies, it's essential to ensure that your web application's templates do not misplace data. This rule refers to injecting data in sensitive areas of HTML which offer an attacker the opportunity to influence markup parsing and which do not ordinarily require escaping when used by a programmer. Consider the following examples where [...] is a data injection:
 
-.. code-block:: html
+::
 
      <script>...</script>
      
