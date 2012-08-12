@@ -133,15 +133,59 @@ Considering the very attractive benefits of this attack, it might be surprising 
 
 You would need to do this for all operations which involve loading XML from a string, file or remote URI.
 
-Where external entities are never required by the application or for the majority of its requests, you can simply disable external resource loading altogether on a more global basis:
+Where external entities are never required by the application or for the majority of its requests, you can simply disable external resource loading altogether on a more global basis which, in most cases, will be far more preferable to locating all instances of XML loading, bearing in mind many libraries are probably written with innate XXE vulnerabilities present:
 
 .. code-block:: php
     
     libxml_disable_entity_loader(true);
 
-Just remember to reset this to ``TRUE`` where you need to temporarily enable external resource loading. An example of a process which requires external entities in an innocent fashion is rendering Docbook XML into HTML where the XSL styling is dependent on external entities.
+Just remember to reset this once again to ``TRUE`` after any temporary enabling of external resource loading. An example of a process which requires external entities in an innocent fashion is rendering Docbook XML into HTML where the XSL styling is dependent on external entities.
 
 This ``libxml2`` function is not, by an means, a silver bullet. Other extensions and PHP libraries which parse or otherwise handle XML will need to be assessed to locate their "off" switch for external entity resolution.
+
+In the event that the above type of behaviour switching is not possible, you can alternatively check if an XML document declares a ``DOCTYPE``. If it does, and external entities are not allowed, you can then simply discard the XML document, denying the untrusted XML access to a potentially vulnerable parser, and log it as a probable attack. If you log attacks this will be a necessary step since there be no other errors or exceptions to catch the attempt. This check should be built into your normal Input Validation routines.
+
+.. code-block:: php
+    
+    $collapsedXML = preg_replace("/[:space:]/", '', $xml);
+    if(preg_match("/<!DOCTYPE/i", $collapsedXml)) {
+        // log the presence of custom entities
+        throw new \InvalidArgumentException(
+            'Invalid XML: Detected use of XML custom entities'
+        )
+    }
+
+It is also worth considering that it's preferable to simply discard data that we suspect is the result of an attack rather than continuing to process it further. Why continue to engage with something that shows all the signs of being dangerous? Therefore, merging both steps from above has the benefit of proactively ignoring obviously bad data while still protecting you in the event that discarding data is beyond your control (e.g. 3rd-party libraries). Discarding the data entirely becomes far more compelling for another reason stated earlier - ``libxml_disable_entity_loader()`` does not disable custom entities entirely, only those which reference external resources. This can still enable a related Injection attack called XML Entity Expansion which we will meet next.
+
+XML Entity Expansion
+--------------------
+
+XMl External Entity Injection is somewhat similar to XML Entity Expansion but it focuses primarily on enabling a Denial Of Service attack by attempting to exhaust the resources of the target application's server environment. This is achieved in XML Entity Expansion by creating a custom entity definition in the XML's ``DOCTYPE`` which could, for example, generate a far larger XML structure in memory than the XML's original size would suggest thus allowing these attacks to consume memory resources essential to keeping the web server operating efficiently.
+
+XML Entity Expansion Examples
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There are several approaches to expanding XML custom entities to achieve the desired effect of exhausting server resources.
+
+Generic Entity Expansion
+""""""""""""""""""""""""
+
+TBD
+
+Recursive Entity Expansion
+""""""""""""""""""""""""""
+
+TBD
+
+Remote Entity Expansion
+"""""""""""""""""""""""
+
+TBD
+
+Defenses Against XML Entity Expansion
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TBD
 
 SOAP Injection
 --------------
