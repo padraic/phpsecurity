@@ -122,7 +122,7 @@ TBD
 Defenses against XML External Entity Injection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Considering the very attractive benefits of this attack, it might be surprising that the defense is extremely simple. Since ``DOM``, ``SimpleXML``, and ``XMLReader`` all rely on ``libxml2``, we can simply use the ``libxml_disable_entity_loader()`` function to disable external entity resolution. This does not disable custom entities which are predefined in a `DOCTYPE` since these do not make use of external resources which require a file system operation or HTTP request.
+Considering the very attractive benefits of this attack, it might be surprising that the defense is extremely simple. Since ``DOM``, ``SimpleXML``, and ``XMLReader`` all rely on ``libxml2``, we can simply use the ``libxml_disable_entity_loader()`` function to disable external entity resolution. This does not disable custom entities which are predefined in a ``DOCTYPE`` since these do not make use of external resources which require a file system operation or HTTP request.
 
 .. code-block:: php
 
@@ -160,7 +160,7 @@ It is also worth considering that it's preferable to simply discard data that we
 XML Entity Expansion
 --------------------
 
-XMl External Entity Injection is somewhat similar to XML Entity Expansion but it focuses primarily on enabling a Denial Of Service attack by attempting to exhaust the resources of the target application's server environment. This is achieved in XML Entity Expansion by creating a custom entity definition in the XML's ``DOCTYPE`` which could, for example, generate a far larger XML structure in memory than the XML's original size would suggest thus allowing these attacks to consume memory resources essential to keeping the web server operating efficiently.
+XMl Entity Expansion is somewhat similar to XML Entity Expansion but it focuses primarily on enabling a Denial Of Service (DOS) attack by attempting to exhaust the resources of the target application's server environment. This is achieved in XML Entity Expansion by creating a custom entity definition in the XML's ``DOCTYPE`` which could, for example, generate a far larger XML structure in memory than the XML's original size would suggest thus allowing these attacks to consume memory resources essential to keeping the web server operating efficiently.
 
 XML Entity Expansion Examples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -170,12 +170,48 @@ There are several approaches to expanding XML custom entities to achieve the des
 Generic Entity Expansion
 """"""""""""""""""""""""
 
-TBD
+In a generic entity expansion attack, a custom entity is defined as an extremely long string. When the entity is used numerous times throughout the document, the entity is expanded each time leading to an XML structure which requires significantly more RAM than the original XML size would suggest.
+
+.. code-block:: xml
+
+    <?xml version="1.0"?>
+    <!DOCTYPE results [<!ENTITY $long "SOME_SUPER_LONG_STRING">]>
+    <results>
+        <result>Now include &long; lots of times to expand
+        the in-memory size of this XML structure</result>
+        <result>&long;&long;&long;&long;&long;&long;&long;
+        &long;&long;&long;&long;&long;&long;&long;&long;
+        &long;&long;&long;&long;&long;&long;&long;&long;
+        &long;&long;&long;&long;&long;&long;&long;&long;
+        Keep it going...
+        &long;&long;&long;&long;&long;&long;&long;...</result>
+    </results>
+
+By balancing the size of the custom entity string and the number of uses of the entity within the body of the document, it's possible to create an XML
+file or string which will be expanded to use up a predictable amount of server RAM. By occupying the server's RAM with repetitive requests of this nature, it would be possible to mount a successful Denial Of Service attack. The downside of the approach is that the initial XML must itself be quite large since the memory consumption is based on a simple multiplier effect.
 
 Recursive Entity Expansion
 """"""""""""""""""""""""""
 
-TBD
+Where generic entity expansion requires a large XML input, recursive entity expansion packs more punch per byte of input size. It relies on the XML parser to exponentially resolve sets of small entities in such a way that their exponential nature explodes from a much smaller XML input size into something substantially larger. It's quite fitting that this approach is also commonly called an "XML Bomb".
+
+.. code-block:: xml
+
+    <?xml version="1.0"?>
+    <!DOCTYPE results [
+        <!ENTITY x0 "BOOM!">
+        <!ENTITY x1 "&boom;&boom;">
+        <!ENTITY x2 "&x1;&x1;">
+        <!ENTITY x3 "&x2;&x2;">
+        <!-- Add the remaining sequence from x4...x100 (or boom) -->
+        <!ENTITY x99 "&x98;&x98;">
+        <!ENTITY boom "&x99;&x99;">
+    ]>
+    <results>
+        <result>Explode in 3...2...1...&boom;</result>
+    </results>
+
+The XML Bomb approach doesn't require a large XML size which might be restricted by the application. It's exponential resolving of the entities results in a final text expansion that is 2^100 times the size of the ``&x0;`` entity. That's quite a large and devastating BOOM!
 
 Remote Entity Expansion
 """""""""""""""""""""""
