@@ -63,7 +63,6 @@ We previously met an example of Information Disclosure by noting that a custom e
 This would expand the custom ``&harmless;`` entity with the file contents. Since all such requests are done locally, it allows for disclosing the contents of all files that the application has read access to. This would allow attackers to examine files that are not publicly available should the expanded entity be included in the output of the application. The file contents that can be disclosed in this are significantly limited - they must be either XML themselves or a format which won't cause XML parsing to generate errors. This restriction can, however, be completely ignored in PHP:
 
 .. code-block:: xml
-    :highlight: 3
 
     <?xml version="1.0"?>
     <!DOCTYPE results [
@@ -102,7 +101,6 @@ Access Controls can be dictated in any number of ways. Since XXE attacks are mou
 This snippet of PHP and countless others like it are used to restrict access to certain PHP files to the local server, i.e. localhost. However, an XXE vulnerability in the frontend to the application actually gives an attacker the exact credentials needed to bypass this access control since all HTTP requests by the XML parser will be made from localhost.
 
 .. code-block:: xml
-    :highlight: 3
 
     <?xml version="1.0"?>
     <!DOCTYPE results [
