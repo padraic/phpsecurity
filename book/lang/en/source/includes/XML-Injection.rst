@@ -42,7 +42,7 @@ Custom entities obviously have a benefit in representing repetitive text and XML
 
 Depending on the contents of the requested local file, the content could be used when expanding the ``&harmless;`` entity and the expanded content could then be extracted from the XML parser and included in the web application's output for an attacker to examine, i.e. giving rise to Information Disclosure. The file retrieved will be interpreted as XML unless it avoids the special characters that trigger that interpretation thus making the scope of local file content disclosure limited. If the file is intepreted as XML but does not contain valid XML, an error will be the likely result preventing disclosure of the contents. PHP, however, has a neat "trick" available to bypass this scope limitation and remote HTTP requests can still, obviously, have an impact on the web application even if the returned response cannot be communicated back to the attacker.
 
-PHP offers three frequently used methods of parsing and consuming XML: PHP ``DOM`, ``SimpleXML`` and ``XMLReader``. All three of these use the ``libxml2`` extension and external entity support is enabled by default. As a consequence, PHP has a by-default vulnerability to XXE which makes it extremely easy to miss when considering the security of a web application or an XML consuming library. 
+PHP offers three frequently used methods of parsing and consuming XML: PHP ``DOM``, ``SimpleXML`` and ``XMLReader``. All three of these use the ``libxml2`` extension and external entity support is enabled by default. As a consequence, PHP has a by-default vulnerability to XXE which makes it extremely easy to miss when considering the security of a web application or an XML consuming library. 
 
 Examples of XML External Entity Injection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -66,7 +66,9 @@ This would expand the custom ``&harmless;`` entity with the file contents. Since
 
     <?xml version="1.0"?>
     <!DOCTYPE results [
-        <!ENTITY harmless SYSTEM "php://filter/read=convert.base64-encode/resource=/var/www/config.ini">
+        <!ENTITY harmless SYSTEM
+        "php://filter/read=convert.base64-encode/resource=/var/www/config.ini"
+        >
     ]>
     <results>
         <result>&harmless;</result>
@@ -92,9 +94,7 @@ Access Controls can be dictated in any number of ways. Since XXE attacks are mou
     ) {
         header('HTTP/1.0 403 Forbidden');
         exit(
-            'You are not allowed to access this file. Check '
-            . basename(__FILE__)
-            . ' for more information.'
+            'You are not allowed to access this file.'
         );
     }
 
@@ -170,12 +170,12 @@ There are several approaches to expanding XML custom entities to achieve the des
 Generic Entity Expansion
 """"""""""""""""""""""""
 
-In a generic entity expansion attack, a custom entity is defined as an extremely long string. When the entity is used numerous times throughout the document, the entity is expanded each time leading to an XML structure which requires significantly more RAM than the original XML size would suggest.
+Also known as a "Quadratic Blowup Attack", a generic entity expansion attack, a custom entity is defined as an extremely long string. When the entity is used numerous times throughout the document, the entity is expanded each time leading to an XML structure which requires significantly more RAM than the original XML size would suggest.
 
 .. code-block:: xml
 
     <?xml version="1.0"?>
-    <!DOCTYPE results [<!ENTITY $long "SOME_SUPER_LONG_STRING">]>
+    <!DOCTYPE results [<!ENTITY long "SOME_SUPER_LONG_STRING">]>
     <results>
         <result>Now include &long; lots of times to expand
         the in-memory size of this XML structure</result>
@@ -193,14 +193,14 @@ file or string which will be expanded to use up a predictable amount of server R
 Recursive Entity Expansion
 """"""""""""""""""""""""""
 
-Where generic entity expansion requires a large XML input, recursive entity expansion packs more punch per byte of input size. It relies on the XML parser to exponentially resolve sets of small entities in such a way that their exponential nature explodes from a much smaller XML input size into something substantially larger. It's quite fitting that this approach is also commonly called an "XML Bomb".
+Where generic entity expansion requires a large XML input, recursive entity expansion packs more punch per byte of input size. It relies on the XML parser to exponentially resolve sets of small entities in such a way that their exponential nature explodes from a much smaller XML input size into something substantially larger. It's quite fitting that this approach is also commonly called an "XML Bomb" or "Billion Laughs Attack".
 
 .. code-block:: xml
 
     <?xml version="1.0"?>
     <!DOCTYPE results [
         <!ENTITY x0 "BOOM!">
-        <!ENTITY x1 "&boom;&boom;">
+        <!ENTITY x1 "&x0;&x0;">
         <!ENTITY x2 "&x1;&x1;">
         <!ENTITY x3 "&x2;&x2;">
         <!-- Add the remaining sequence from x4...x100 (or boom) -->
@@ -211,7 +211,7 @@ Where generic entity expansion requires a large XML input, recursive entity expa
         <result>Explode in 3...2...1...&boom;</result>
     </results>
 
-The XML Bomb approach doesn't require a large XML size which might be restricted by the application. It's exponential resolving of the entities results in a final text expansion that is 2^100 times the size of the ``&x0;`` entity. That's quite a large and devastating BOOM!
+The XML Bomb approach doesn't require a large XML size which might be restricted by the application. It's exponential resolving of the entities results in a final text expansion that is 2^100 times the size of the ``&x0;`` entity value. That's quite a large and devastating BOOM!
 
 Remote Entity Expansion
 """""""""""""""""""""""
@@ -235,7 +235,15 @@ The above also enables a more devious approach to executing a DOS attack should 
 Defenses Against XML Entity Expansion
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TBD
+The obvious defenses here are inherited from our defenses for ordinary XML External Entity (XXE) attacks. We should disable the resolution of custom entities in XML to local files and remote HTTP requests by using the following function which globally applies to all PHP XML extensions that internally use ``libxml2``.
+
+.. code-block:: php
+
+    libxml_disable_entity_loader(true);
+
+PHP does, however, have the quirky reputation of not implementing an obvious means of completely disabling the definition of custom entities using an XML DTD via the ``DOCTYPE``. PHP does define a ``LIBXML_NOENT`` constant and there also exists public property ``DOMDocument::$substituteEntities`` but neither if used has any effect whatsoever. It appears we're stuck with a default vulnerability to Entity Expansion attacks.
+
+Nevertheless, ``libxml2`` does has a built in maximum tolerance for recursive entities
 
 SOAP Injection
 --------------
