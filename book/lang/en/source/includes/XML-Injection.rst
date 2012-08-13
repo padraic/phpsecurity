@@ -117,7 +117,9 @@ If log viewing were restricted to local requests, then the attacker may be able 
 Denial Of Service (DOS)
 """""""""""""""""""""""
 
-TBD
+Almost anything that can dictate how server resources are utilised could feasibly be used to generate a DOS attack. With XML External Entity Injection, an attacker has access to make arbitrary HTTP requests which can be used to exhaust server resources under the right conditions.
+
+See below also for other potential DOS uses of XXE attacks in terms of XML Entity Expansions.
 
 Defenses against XML External Entity Injection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -147,12 +149,26 @@ In the event that the above type of behaviour switching is not possible, you can
 
 .. code-block:: php
     
+    /**
+     * Attempt a quickie detection
+     */
     $collapsedXML = preg_replace("/[:space:]/", '', $xml);
     if(preg_match("/<!DOCTYPE/i", $collapsedXml)) {
-        // log the presence of custom entities
         throw new \InvalidArgumentException(
-            'Invalid XML: Detected use of XML custom entities'
-        )
+            'Invalid XML: Detected use of illegal DOCTYPE'
+        );
+    }
+    /**
+     * Attempt a fallback detection using DOMDocument analysis
+     */
+    $dom = new DOMDocument;
+    $dom->loadXML($xml);
+    foreach ($dom->childNodes as $child) {
+        if ($child->nodeType === XML_DOCUMENT_TYPE_NODE) {
+            throw new \InvalidArgumentException(
+                'Invalid XML: Detected use of illegal DOCTYPE'
+            );
+        }
     }
 
 It is also worth considering that it's preferable to simply discard data that we suspect is the result of an attack rather than continuing to process it further. Why continue to engage with something that shows all the signs of being dangerous? Therefore, merging both steps from above has the benefit of proactively ignoring obviously bad data while still protecting you in the event that discarding data is beyond your control (e.g. 3rd-party libraries). Discarding the data entirely becomes far more compelling for another reason stated earlier - ``libxml_disable_entity_loader()`` does not disable custom entities entirely, only those which reference external resources. This can still enable a related Injection attack called XML Entity Expansion which we will meet next.
@@ -241,9 +257,38 @@ The obvious defenses here are inherited from our defenses for ordinary XML Exter
 
     libxml_disable_entity_loader(true);
 
-PHP does, however, have the quirky reputation of not implementing an obvious means of completely disabling the definition of custom entities using an XML DTD via the ``DOCTYPE``. PHP does define a ``LIBXML_NOENT`` constant and there also exists public property ``DOMDocument::$substituteEntities`` but neither if used has any effect whatsoever. It appears we're stuck with a default vulnerability to Entity Expansion attacks.
+PHP does, however, have the quirky reputation of not implementing an obvious means of completely disabling the definition of custom entities using an XML DTD via the ``DOCTYPE``. PHP does define a ``LIBXML_NOENT`` constant and there also exists public property ``DOMDocument::$substituteEntities`` but neither if used has any ameliorating effect. It appears we're stuck with using a makeshift set of workarounds instead.
 
-Nevertheless, ``libxml2`` does has a built in maximum tolerance for recursive entities
+Nevertheless, ``libxml2`` does has a built in default intolerance for recursive entity resolution which will light up your error log like a Christmas tree. As such, there's no particular need to implement a specific defense against recursive entities though we should do something anyway on the off chance ``libxml2`` suffers a relapse.
+
+The primary new danger therefore is the inelegent approach of the Quadratic Blowup Attack or Generic Entity Expansion. This attack requires no remote or local system calls and does not require entity recursion. In fact, the only defense is to either discard XML or sanitise XML where it contains a ``DOCTYPE``. Discarding the XML is the safest bet unless use of a ``DOCTYPE`` is both expected and we received it from a secured trusted source, i.e. we received it over a peer-verified HTTPS connection. Otherwise we need to create some homebrewed logic in the absence of PHP giving us a working option to disable DTDs. We've met this safety check before...
+
+.. code-block:: php
+
+    /**
+     * Attempt a quickie detection
+     */
+    $collapsedXML = preg_replace("/[:space:]/", '', $xml);
+    if(preg_match("/<!DOCTYPE/i", $collapsedXml)) {
+        throw new \InvalidArgumentException(
+            'Invalid XML: Detected use of illegal DOCTYPE'
+        );
+    }
+    /**
+     * Attempt a fallback detection using DOMDocument analysis
+     */
+    $dom = new DOMDocument;
+    $dom->loadXML($xml);
+    foreach ($dom->childNodes as $child) {
+        if ($child->nodeType === XML_DOCUMENT_TYPE_NODE) {
+            throw new \InvalidArgumentException(
+                'Invalid XML: Detected use of illegal DOCTYPE'
+            );
+        }
+    }
+
+The above is, of course, backed up by having ``libxml_disable_entity_loader`` set to ``TRUE`` so external entity references are not resolved. Where an XML parser is not reliant on ``libxml2`` this may be the only defense possible unless that parser has a comprehensive set of options controlling how entities can be resolved.
+
 
 SOAP Injection
 --------------
