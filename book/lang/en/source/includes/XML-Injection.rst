@@ -42,7 +42,9 @@ Custom entities obviously have a benefit in representing repetitive text and XML
 
 Depending on the contents of the requested local file, the content could be used when expanding the ``&harmless;`` entity and the expanded content could then be extracted from the XML parser and included in the web application's output for an attacker to examine, i.e. giving rise to Information Disclosure. The file retrieved will be interpreted as XML unless it avoids the special characters that trigger that interpretation thus making the scope of local file content disclosure limited. If the file is intepreted as XML but does not contain valid XML, an error will be the likely result preventing disclosure of the contents. PHP, however, has a neat "trick" available to bypass this scope limitation and remote HTTP requests can still, obviously, have an impact on the web application even if the returned response cannot be communicated back to the attacker.
 
-PHP offers three frequently used methods of parsing and consuming XML: PHP ``DOM``, ``SimpleXML`` and ``XMLReader``. All three of these use the ``libxml2`` extension and external entity support is enabled by default. As a consequence, PHP has a by-default vulnerability to XXE which makes it extremely easy to miss when considering the security of a web application or an XML consuming library. 
+PHP offers three frequently used methods of parsing and consuming XML: PHP ``DOM``, ``SimpleXML`` and ``XMLReader``. All three of these use the ``libxml2`` extension and external entity support is enabled by default. As a consequence, PHP has a by-default vulnerability to XXE which makes it extremely easy to miss when considering the security of a web application or an XML consuming library.
+
+You should also remember that XHTML and HTML5 may both be serialised as valid XML which may mean that some XHTML pages or XML-serialised HTML5 could be parsed as XML, e.g. by using ``DOMDocument::loadXML()`` instead of ``DOMDocument::loadHTML()``. Such uses of an XML parser are also vulnerable to XML External Entity Injection. Remember that ``libxml2`` does not currently even recognise the HTML5 ``DOCTYPE`` and so cannot validate it as it would for XHTML DOCTYPES.
 
 Examples of XML External Entity Injection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -176,10 +178,10 @@ It is also worth considering that it's preferable to simply discard data that we
 XML Entity Expansion
 --------------------
 
-XMl Entity Expansion is somewhat similar to XML Entity Expansion but it focuses primarily on enabling a Denial Of Service (DOS) attack by attempting to exhaust the resources of the target application's server environment. This is achieved in XML Entity Expansion by creating a custom entity definition in the XML's ``DOCTYPE`` which could, for example, generate a far larger XML structure in memory than the XML's original size would suggest thus allowing these attacks to consume memory resources essential to keeping the web server operating efficiently.
+XMl Entity Expansion is somewhat similar to XML Entity Expansion but it focuses primarily on enabling a Denial Of Service (DOS) attack by attempting to exhaust the resources of the target application's server environment. This is achieved in XML Entity Expansion by creating a custom entity definition in the XML's ``DOCTYPE`` which could, for example, generate a far larger XML structure in memory than the XML's original size would suggest thus allowing these attacks to consume memory resources essential to keeping the web server operating efficiently. This attack also applies to the XML-serialisation of HTML5 which is not currently recognised as HTML by the ``libxml2`` extension.
 
-XML Entity Expansion Examples
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Examples of XML Entity Expansion 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 There are several approaches to expanding XML custom entities to achieve the desired effect of exhausting server resources.
 

@@ -8,8 +8,5 @@ In PHP, Directory Traversals also incorporate remote resources since functions s
 Examples of Directory Traversal
 -------------------------------
 
-Goals of Directory Traversal
-----------------------------
-
 Defenses against Directory Traversal
 ------------------------------------
