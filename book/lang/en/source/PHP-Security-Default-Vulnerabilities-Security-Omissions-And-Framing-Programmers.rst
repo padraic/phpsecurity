@@ -1,5 +1,5 @@
-PHP Security: Default Vulnerabilities, Security Omissions and Framing Programmers
-#################################################################################
+PHP Security: Default Vulnerabilities, Security Omissions and Framing Programmers?
+##################################################################################
 
 Secure By Design is a simple concept in the security world where software is designed from the ground up to be as secure as possible regardless of whether or not it imposes a disadvantage to the end user. The purpose of this principle is to ensure that users who are not security experts can use the software without necessarily being obliged to jump through hoops to learn how to secure their usage or, much worse, being tempted into ignoring security concerns which expose unaddressed security vulnerabilities due to ignorance, inexperience or laziness. The crux of the principle therefore is to promote trust in the software while, somewhat paradoxically, avoiding too much complexity for the end user.
 
@@ -190,3 +190,67 @@ At the end of the day, all security vulnerabilities must be blamed on someone - 
 So PHP, are you a secure programming language or not? I'm no longer convinced that you are and I really don't feel like playing dice with you anymore.
 
 This article can be discussed or commented on at: http://blog.astrumfutura.com/2012/08/php-security-default-vulnerabilities-security-omissions-and-framing-programmers/
+
+.. raw:: html
+
+    <div id="disqus_thread">
+                        <div id="dsq-content">
+                <ul id="dsq-comments">
+                    </ul>
+            </div>
+        </div>
+
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    <script type="text/javascript">
+    /* <![CDATA[ */
+        var disqus_url = 'http://blog.astrumfutura.com/2012/08/php-security-default-vulnerabilities-security-omissions-and-framing-programmers/ ';
+        var disqus_identifier = '781 http://blog.astrumfutura.com/?p=781';
+        var disqus_container_id = 'disqus_thread';
+        var disqus_domain = 'disqus.com';
+        var disqus_shortname = 'padraic';
+        var disqus_title = "PHP Security: Default Vulnerabilities, Security Omissions and Framing Programmers?";
+            var disqus_config = function () {
+            var config = this; // Access to the config object
+
+            /* 
+               All currently supported events:
+                * preData — fires just before we request for initial data
+                * preInit - fires after we get initial data but before we load any dependencies
+                * onInit  - fires when all dependencies are resolved but before dtpl template is rendered
+                * afterRender - fires when template is rendered but before we show it
+                * onReady - everything is done
+             */
+
+            config.callbacks.preData.push(function() {
+                // clear out the container (its filled for SEO/legacy purposes)
+                document.getElementById(disqus_container_id).innerHTML = '';
+            });
+                    config.callbacks.onReady.push(function() {
+                // sync comments in the background so we don't block the page
+                DISQUS.request.get('?cf_action=sync_comments&post_id=781');
+            });
+                };
+        var facebookXdReceiverPath = 'http://blog.astrumfutura.com/wp-content/plugins/disqus-comment-system/xd_receiver.htm';
+    /* ]]> */
+    </script>
+
+    <script type="text/javascript">
+    /* <![CDATA[ */
+        var DsqLocal = {
+            'trackbacks': [
+            ],
+            'trackback_url': "http:\/\/blog.astrumfutura.com\/2012\/08\/php-security-default-vulnerabilities-security-omissions-and-framing-programmers\/trackback\/"   };
+    /* ]]> */
+    </script>
+
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.' + disqus_domain + '/embed.js?pname=wordpress&pver=2.52';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    /* ]]> */
+    </script>
