@@ -188,3 +188,5 @@ While a lengthy article, the core purpose here is to illustrate a sampling of PH
 At the end of the day, all security vulnerabilities must be blamed on someone - either PHP is at fault and it needs to be fixed or programmers are at fault for not being aware of these issues. Personally, I find it difficult to blame programmers. They expect their programming language to be secure and it's not an unreasonable demand. Yes, tighening security may make a programmer's life more difficult but this misses an important point - by not tightening security, their lives are already more difficult with userland fixes being required, configuration options that need careful monitoring, and documentation omissions, misinformation and poor examples leading them astray.
 
 So PHP, are you a secure programming language or not? I'm no longer convinced that you are and I really don't feel like playing dice with you anymore.
+
+This article can be discussed or commented on at: http://blog.astrumfutura.com/2012/08/php-security-default-vulnerabilities-security-omissions-and-framing-programmers/
