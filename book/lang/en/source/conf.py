@@ -73,7 +73,7 @@ release = '1.0a1'
 # directories to ignore when looking for source files.
 # Padraic: Exclude included files since they are merged into parent rst file but
 # need to be excluded as a 'source' file for the toctree.
-exclude_patterns = ['includes']
+exclude_patterns = ['_includes']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None

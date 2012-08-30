@@ -21,7 +21,7 @@ Articles:
 .. toctree::
     :maxdepth: 2
 
-    PHP-Security-Default-Vulnerabilities-Security-Omissions-And-Framing-Programmers
+    _articles/PHP-Security-Default-Vulnerabilities-Security-Omissions-And-Framing-Programmers
 
 Indices and tables
 ++++++++++++++++++

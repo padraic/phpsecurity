@@ -11,9 +11,9 @@ OWASP uses the following definition for Injection Attacks:
  
 Injection flaws, such as SQL, OS, and LDAP injection, occur when untrusted data is sent to an interpreter as part of a command or query. The attacker’s hostile data can trick the interpreter into executing unintended commands or accessing unauthorized data.
 
-.. include:: includes/SQL-Injection.rst
-.. include:: includes/Code-Injection.rst
-.. include:: includes/Command-Injection.rst
-.. include:: includes/Log-Injection.rst
-.. include:: includes/Directory-Traversal.rst
-.. include:: includes/XML-Injection.rst
+.. include:: _includes/SQL-Injection.rst
+.. include:: _includes/Code-Injection.rst
+.. include:: _includes/Command-Injection.rst
+.. include:: _includes/Log-Injection.rst
+.. include:: _includes/Directory-Traversal.rst
+.. include:: _includes/XML-Injection.rst
