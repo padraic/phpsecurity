@@ -43,4 +43,6 @@ Transport Layer Security is a generic title for securing the connection between 
 Server To Server Transport Layer Security
 =========================================
 
-As much as I love PHP as a programming language, the briefest of surveys makes it very clear that 
+As much as I love PHP as a programming language, the briefest of surveys makes it very clear that Transport Layer Security related vulnerabilities are extremely common. This is backed up by PHP itself suffering from a very poor implementation of SSL/TLS in PHP Streams which are used by everything from socket based clients to the ``file_get_contents()`` function. This shortcoming is then exacerbated by the fact that many HTTP client libraries in PHP use Socket-based adapters by default.
+
+If you take nothing else from this section, my advice is to make sure that all HTTPS requests are performed using the CURL extension for PHP. This extension is configured to be secure by default and is backed up, in terms of expert peer review, by its large user base outside of PHP. Take this one simple step towards greater security and you will not regret it.
