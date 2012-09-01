@@ -15,6 +15,7 @@ Contents:
     Input-Validation
     Injection-Attacks
     Cross-Site-Scripting-(XSS)
+    Transport-Layer-Security-(HTTPS-SSL-and-TLS)
 
 Articles:
 
