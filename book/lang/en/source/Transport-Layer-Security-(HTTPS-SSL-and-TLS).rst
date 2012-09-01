@@ -43,6 +43,18 @@ Transport Layer Security is a generic title for securing the connection between 
 Server To Server Transport Layer Security
 =========================================
 
-As much as I love PHP as a programming language, the briefest of surveys makes it very clear that Transport Layer Security related vulnerabilities are extremely common. This is backed up by PHP itself suffering from a very poor implementation of SSL/TLS in PHP Streams which are used by everything from socket based clients to the ``file_get_contents()`` function. This shortcoming is then exacerbated by the fact that many HTTP client libraries in PHP use Socket-based adapters by default.
+As much as I love PHP as a programming language, the briefest survey of popular open source libraries makes it very clear that Transport Layer Security related vulnerabilities are extremely common and, by extension, are tolerated by the PHP community for absolutely no good reason other than it's easier to subject users to security violations than fix the underlying problem. This is backed up by PHP itself suffering from a very poor implementation of SSL/TLS in PHP Streams which are used by everything from socket based HTTP clients to the ``file_get_contents()`` and other filesystem functions. This shortcoming is then exacerbated by the fact that the PHP library makes no effort to discuss the security implications of SSL/TLS failures.
 
-If you take nothing else from this section, my advice is to make sure that all HTTPS requests are performed using the CURL extension for PHP. This extension is configured to be secure by default and is backed up, in terms of expert peer review, by its large user base outside of PHP. Take this one simple step towards greater security and you will not regret it.
+If you take nothing else from this section, my advice is to make sure that all HTTPS requests are performed using the CURL extension for PHP. This extension is configured to be secure by default and is backed up, in terms of expert peer review, by its large user base outside of PHP. Take this one simple step towards greater security and you will not regret it. A more ideal solution would be for PHP's internal developers to wake up and apply the Secure By Default principle to its builtin SSL/TLS support.
+
+My introduction to SSL/TLS in PHP is obviously very harsh. Transport Layer Security vulnerabilities are far more basic than most security issues and we are all familiar with the emphasis it receives in browsers. Our server-side applications are no less important in the chain of securing user data.
+
+Let's examine SSL/TLS in PHP in more detail by looking in turn at PHP Streams and the superior CURL extension.
+
+PHP Streams
+-----------
+
+For those who are not familiar with PHP streams, it is a generic 
+
+CURL Extension
+--------------
