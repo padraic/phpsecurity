@@ -111,9 +111,20 @@ As described earlier in this chapter, failing to securely configure SSL/TLS leav
 Now we have a secure example! If you contrast this with the earlier example, you'll note that we had to set four options which were, by default, unset or disabled by PHP. Let's examine each in turn to demystify their purpose.
 
 * verify_peer
+
+Peer Verification is the act of verifying that the SSL Certificate presented by the server we sent the HTTPS request to is valid. In order to be valid, the public certificate from the server must be signed by the private key of a trusted Certificate Authority (CA). This can be checked using the CA's public key which will be included in the file set as the ``cafile`` option to the SSL Context we're using. The certificate must also not have expired.
+
 * cafile
+
+The ``cafile`` setting must point to a valid file containing the public keys of trusted CAs. This is not provided automatically by PHP so you need to have the keys in a concatenated certificate formatted file (a PEM file). If you're having any difficulty locating a copy, you can download a copy which is parsed from Mozilla's VCS from http://curl.haxx.se/ca/cacert.pem . Without this file, it is impossible to perform Peer Verification and the request will fail.
+
 * verify_depth
+
+This setting sets the depth of the chain of trust (i.e. how many signing CAs exist before we get to a root trusted CA).
+
 * CN_match
+
+The previous three options focused on verifying the certificate presented by the server. They do not, however, tell us if the verified certificate is valid for the domain name or IP address we are requesting. To ensure that the certificate is tied to the current domain, we need to perform Host Verification. In PHP, this requires setting ``CN_match`` in the SSL Context to the HTTP host value (including subdomain part if present!). PHP performs the matching internally so long as this option is set. Not performing this check would allow an MitM to present a valid certificate (e.g. for google.com since SSL certs are public!) even if that certificate was never issued for the requested domain! Yes, it really is that important to the verification process!
 
 CURL Extension
 --------------
@@ -130,3 +141,8 @@ Since it requires no special treatments, you can perform a similar Twitter API c
     $result = curl_exec($req);
 
 This is why my recommendation to you is to prefer CURL for HTTPS requests. It's secure by default whereas PHP Streams is most definitely not. If you feel comfortable setting up SSL context options, then feel free to use PHP Streams. Otherwise, just use CURL and avoid the headache. At the end of the day, CURL is safer, requires less code, and is less likely to suffer a human-error related failure in its SSL/TLS security.
+
+SSL/TLS From Client (Client/Browser to Server)
+==============================================
+
+So far, most of what we've discussed has been related to SSL/TLS connections established from a PHP web application to another server. Of course, there are quite a few security concerns when our web application is the party exposing SSL/TLS support to client browsers and other applications.
