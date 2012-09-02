@@ -40,8 +40,8 @@ Definitions & Basic Vulnerabilities
 Transport Layer Security is a generic title for securing the connection between two parties using encryption, identity verification and so on.
 
 
-Server To Server Transport Layer Security
-=========================================
+SSL/TLS From PHP (Server to Server)
+===================================
 
 As much as I love PHP as a programming language, the briefest survey of popular open source libraries makes it very clear that Transport Layer Security related vulnerabilities are extremely common and, by extension, are tolerated by the PHP community for absolutely no good reason other than it's easier to subject users to security violations than fix the underlying problem. This is backed up by PHP itself suffering from a very poor implementation of SSL/TLS in PHP Streams which are used by everything from socket based HTTP clients to the ``file_get_contents()`` and other filesystem functions. This shortcoming is then exacerbated by the fact that the PHP library makes no effort to discuss the security implications of SSL/TLS failures.
 
@@ -54,7 +54,65 @@ Let's examine SSL/TLS in PHP in more detail by looking in turn at PHP Streams an
 PHP Streams
 -----------
 
-For those who are not familiar with PHP streams, it is a generic 
+For those who are not familiar with PHP's Streams feature, it was introduced to generalise file, network and other operations which shared common functionality and uses. In order to tell a stream how to handle a specific protocol, there are "wrappers" allowing a Stream to represent a file, a HTTP request, a PHAR archive, a Data URI (RFC 2397) and so on. Opening a stream is simply a matter of calling a supporting function with a relevant URL which indicates the wrapper and target resource to use.
+
+    file_get_contents('file:///tmp/file.ext');
+
+Streams default to using a File Wrapper, so you don't ordinarily need to use a file:// URL and can even use relative paths. This should be obvious since most filesystem functions such as ``file()``, ``include()`` and ``require_once`` all accept stream references. So we can rewrite the above example as:
+
+    file_get_contents('/tmp/file.ext');
+
+Besides files, and of relevance to our current topic of discussion, we can also do the following:
+
+    file_get_contents('http://www.example.com');
+
+Since filesystem functions such as ``file_get_contents()`` support HTTP wrapped streams, they bake into PHP a very simple to access HTTP client if you don't feel the need to expand into using a dedicated HTTP client library like Buzz or Zend Framework's ``\Zend\Http\Client`` classes. In order for this to work, you'll need to enable the ``php.ini`` file's ``allow_url_fopen``configuration option. This option is enabled by default.
+
+However, things get interesting when you try the following:
+
+    $url = 'https://api.twitter.com/1/statuses/public_timeline.json';
+    $result = file_get_contents($url);
+
+The above is a simple unauthenticated request to the Twitter API over HTTPS. It also has a serious flaw. PHP uses an SSL Context (ssl:// transport) for requests made using the HTTPS (https://) and FTPS (ftps://) wrappers. The SSL Context offers a lot of settings for SSL/TLS and their default values are completely insecure. The above example can be rewritten as follows to show how a default SSL Context can be plugged into ``file_get_contents()`` as a parameter:
+
+    $url = 'https://api.twitter.com/1/statuses/public_timeline.json';
+    $contextOptions = array(
+        'ssl' => array()
+    );
+    $sslContext = stream_context_create($contextOptions);
+    $result = file_get_contents($url, NULL, $sslContext);
+
+As described earlier in this chapter, failing to securely configure SSL/TLS leaves the application open to a Man-In-The-Middle (MitM) attack. PHP Streams are entirely insecure over SSL/TLS by default. So, let's correct the above example to make it completely secure!
+
+    $url = 'https://api.twitter.com/1/statuses/public_timeline.json';
+    $contextOptions = array(
+        'ssl' => array(
+            'verify_peer'   => TRUE,
+            'cafile'        => __DIR__ . '/cacert.pem',
+            'verify_depth'  => 5,
+            'CN_match'      => 'api.twitter.com'
+        )
+    );
+    $sslContext = stream_context_create($contextOptions);
+    $result = file_get_contents($url, NULL, $sslContext);
+
+Now we have a secure example! If you contrast this with the earlier example, you'll note that we had to set four options which were, by default, unset or disabled by PHP. Let's examine each in turn to demystify their purpose.
+
+* verify_peer
+* cafile
+* verify_depth
+* CN_match
 
 CURL Extension
 --------------
+
+Unlike PHP Streams, the CURL extension is all about performing data transfers including its most commonly known capability for HTTP requests. Also unlike PHP Streams' SSL context, CURL is configured by default to make requests securely over SSL/TLS. You don't need to do anything special unless it was compiled without the location of a Certificate Authority cert bundle (e.g. a cacert.pem or ca-bundle.pem file containing the certs for trusted CAs).
+
+Since it requires no special treatments, you can perform a similar Twitter API call to what we used earlier for SSL/TLS over a PHP Stream with a minimum of fuss and without worrying about missing options that will make it vulnerable to MitM attacks.
+
+    $url = 'https://api.twitter.com/1/statuses/public_timeline.json';
+    $req = curl_init($url);
+    curl_setopt($req, CURLOPT_RETURNTRANSFER, TRUE);
+    $result = curl_exec($req);
+
+This is why my recommendation to you is to prefer CURL for HTTPS requests. It's secure by default whereas PHP Streams is most definitely not. If you feel comfortable setting up SSL context options, then feel free to use PHP Streams. Otherwise, just use CURL and avoid the headache. At the end of the day, CURL is safer, requires less code, and is less likely to suffer a human-error related failure in its SSL/TLS security.
