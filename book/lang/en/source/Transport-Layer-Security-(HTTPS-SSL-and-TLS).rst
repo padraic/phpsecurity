@@ -124,7 +124,12 @@ This setting sets the depth of the chain of trust (i.e. how many signing CAs exi
 
 * CN_match
 
-The previous three options focused on verifying the certificate presented by the server. They do not, however, tell us if the verified certificate is valid for the domain name or IP address we are requesting. To ensure that the certificate is tied to the current domain, we need to perform Host Verification. In PHP, this requires setting ``CN_match`` in the SSL Context to the HTTP host value (including subdomain part if present!). PHP performs the matching internally so long as this option is set. Not performing this check would allow an MitM to present a valid certificate (e.g. for google.com since SSL certs are public!) even if that certificate was never issued for the requested domain! Yes, it really is that important to the verification process!
+The previous three options focused on verifying the certificate presented by the server. They do not, however, tell us if the verified certificate is valid for the domain name or IP address we are requesting. To ensure that the certificate is tied to the current domain, we need to perform Host Verification. In PHP, this requires setting ``CN_match`` in the SSL Context to the HTTP host value (including subdomain part if present!). PHP performs the matching internally so long as this option is set. Not performing this check would allow an MitM to present a valid certificate (e.g. for google.com since SSL certs are public and readily available) even if that certificate was never issued for the requested domain! Yes, it really is that important to the verification process.
+
+Host Verification Limitation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
 
 CURL Extension
 --------------
