@@ -72,7 +72,7 @@ Besides files, and of relevance to our current topic of discussion, we can also 
 
     file_get_contents('http://www.example.com');
 
-Since filesystem functions such as ``file_get_contents()`` support HTTP wrapped streams, they bake into PHP a very simple to access HTTP client if you don't feel the need to expand into using a dedicated HTTP client library like Buzz or Zend Framework's ``\Zend\Http\Client`` classes. In order for this to work, you'll need to enable the ``php.ini`` file's ``allow_url_fopen``configuration option. This option is enabled by default.
+Since filesystem functions such as ``file_get_contents()`` support HTTP wrapped streams, they bake into PHP a very simple to access HTTP client if you don't feel the need to expand into using a dedicated HTTP client library like Buzz or Zend Framework's ``\Zend\Http\Client`` classes. In order for this to work, you'll need to enable the ``php.ini`` file's ``allow_url_fopen`` configuration option. This option is enabled by default.
 
 However, things get interesting when you try the following:
 
@@ -124,7 +124,9 @@ This setting sets the depth of the chain of trust (i.e. how many signing CAs exi
 
 * CN_match
 
-The previous three options focused on verifying the certificate presented by the server. They do not, however, tell us if the verified certificate is valid for the domain name or IP address we are requesting. To ensure that the certificate is tied to the current domain, we need to perform Host Verification. In PHP, this requires setting ``CN_match`` in the SSL Context to the HTTP host value (including subdomain part if present!). PHP performs the matching internally so long as this option is set. Not performing this check would allow an MitM to present a valid certificate (e.g. for google.com since SSL certs are public and readily available) even if that certificate was never issued for the requested domain! Yes, it really is that important to the verification process.
+The previous three options focused on verifying the certificate presented by the server. They do not, however, tell us if the verified certificate is valid for the domain name or IP address we are requesting. To ensure that the certificate is tied to the current domain, we need to perform Host Verification. In PHP, this requires setting ``CN_match`` in the SSL Context to the HTTP host value (including subdomain part if present!). PHP performs the matching internally so long as this option is set.
+
+Not performing this check would allow an MitM to present a valid certificate (which they can easily apply for on a domain under their control) and reuse it during an attack to ensure they are presenting a certificate signed by a trusted CA. However, such a certificate would only be valid for their domain - and not the one you are seeking to connect to. Setting the ``CN_match`` option will detect such certificate mismatches and cause the HTTPS request to fail. While such a valid certificate would contain identity information specific to the attacker (a precondition of getting one!), please bear in mind that there are undoubtedly any number of valid CA-signed certificates, complete with matching private keys, available to a knowledgeable attacker. These may have been stolen from another company or slipped passed a trusted CA radar (as happened in 2011 when DigiNotor notoriously (sorry, couldn't resist) issued a certificate for ``google.com`` to an unknown party who went on to employ it in MitM attacks predominantly against Iranian users.
 
 Limitation?
 ^^^^^^^^^^^
@@ -140,7 +142,7 @@ CURL Extension
 
 Unlike PHP Streams, the CURL extension is all about performing data transfers including its most commonly known capability for HTTP requests. Also unlike PHP Streams' SSL context, CURL is configured by default to make requests securely over SSL/TLS. You don't need to do anything special unless it was compiled without the location of a Certificate Authority cert bundle (e.g. a cacert.pem or ca-bundle.pem file containing the certs for trusted CAs).
 
-Since it requires no special treatments, you can perform a similar Twitter API call to what we used earlier for SSL/TLS over a PHP Stream with a minimum of fuss and without worrying about missing options that will make it vulnerable to MitM attacks.
+Since it requires no special treatment, you can perform a similar Twitter API call to what we used earlier for SSL/TLS over a PHP Stream with a minimum of fuss and without worrying about missing options that will make it vulnerable to MitM attacks.
 
 .. code-block:: php
 
@@ -155,3 +157,5 @@ SSL/TLS From Client (Client/Browser to Server)
 ==============================================
 
 So far, most of what we've discussed has been related to SSL/TLS connections established from a PHP web application to another server. Of course, there are quite a few security concerns when our web application is the party exposing SSL/TLS support to client browsers and other applications.
+
+To be continued...
