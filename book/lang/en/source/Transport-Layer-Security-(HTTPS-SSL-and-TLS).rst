@@ -126,10 +126,14 @@ This setting sets the depth of the chain of trust (i.e. how many signing CAs exi
 
 The previous three options focused on verifying the certificate presented by the server. They do not, however, tell us if the verified certificate is valid for the domain name or IP address we are requesting. To ensure that the certificate is tied to the current domain, we need to perform Host Verification. In PHP, this requires setting ``CN_match`` in the SSL Context to the HTTP host value (including subdomain part if present!). PHP performs the matching internally so long as this option is set. Not performing this check would allow an MitM to present a valid certificate (e.g. for google.com since SSL certs are public and readily available) even if that certificate was never issued for the requested domain! Yes, it really is that important to the verification process.
 
-Host Verification Limitation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Limitation?
+^^^^^^^^^^^
 
+As described above, verifying that the certificate presented by a server is valid for the host in the URL you're using ensures that a MitM cannot simply present any valid certificate copied from the internet. Is an essential step, one of four, to ensuring your connection is absolutely secure.
 
+The ``CN_match`` parameter exposed by the SSL Content in PHP's ssl:// wrapper tells PHP to perform this matching exercise but it has a downside. The matching used will only check the Common Name (CN) of the SSL certificate but ignore the equally valid Subject Alternative Names (SANs) if defined by the certificate. An SAN lets you protect multiple domain names with a single SSL certificate so it's extremely useful and supported by all modern browsers. Since PHP does not currently support SAN matching, connections over SSL/TLS to a domain secured using such a certificate will fail.
+
+The CURL extension, on the other hand, supports SANs out of the box so it is far more reliable and should be used in preference to PHP's built in HTTPS/FTPS wrappers. Using PHP Streams with this issue introduces a greater risk of erroneous behaviour which in turn would tempt impatient programmers to disable host verification altogether which is the last thing we want to see.
 
 CURL Extension
 --------------
