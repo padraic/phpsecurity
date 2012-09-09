@@ -1,11 +1,11 @@
-Transport Layer Security (HTTPS, TLS and SSL)
-#############################################
+Insufficient Transport Layer Security (HTTPS, TLS and SSL)
+##########################################################
 
-Communication between parties over the internet is fraught with risk. When you are sending payment instructions to your bank using their online facility, the very last thing you ever want to occur is for an attacker to be capable of intercepting, reading, manipulating or replaying the HTTP request to the online application. You can imagine the consequences of an attacker being able to read your session cookie, or to manipulate the payee targeted, or simply to inject new HTML or Javascript into the markup sent in response to a user request to the bank.
+Communication between parties over the internet is fraught with risk. When you are sending payment instructions to a store using their online facility, the very last thing you ever want to occur is for an attacker to be capable of intercepting, reading, manipulating or replaying the HTTP request to the online application. You can imagine the consequences of an attacker being able to read your session cookie, or to manipulate the payee, product or billing address, or to simply to inject new HTML or Javascript into the markup sent in response to a user request to the store.
 
 Protecting sensitive or private data is serious business. Application and browser users have an extremely high expectation in this regard placing a high value on the integrity of their credit card transactions, their privacy and their identity information. The answer to these concerns when it comes to defending the transfer of data from between any two parties is to use Transport Layer Security, typically involving HTTPS, TLS and SSL.
 
-The goals of these security measures is as follows:
+The broad goals of these security measures is as follows:
 
 * To encrypt data being exchanged
 * To guarantee the identity of one or both parties
@@ -14,13 +14,26 @@ The goals of these security measures is as follows:
 
 The most important point to notice in the above is that all four goals must be met in order for Transport Layer Security to be successful. If any one of the above are compromised, we have a real problem.
 
-A common misconception, for example, is that encryption is the core goal and the others are non-essential. This is, in fact, completely untrue. Encryption of the data being transmitted requires that the other party be capable of decrypting the data. This is possible because the client and the server will agree on an encryption key during the negotiation phase when the client attempts a secure connection. However, if an attacker (commonly referred to as a Man-In-The-Middle or MitM) masquerades as the server, this encryption key will be negotiated with them and not the target server. This would allow the attacker or MitM to decrypt all the data sent by the client. Obviously, we therefore need the second goal - the ability to verify the identity of the server that the client is communicating with. Without that verification check, we have no way of telling the difference between a genuine target server and an attacker.
+A common misconception, for example, is that encryption is the core goal and the others are non-essential. This is, in fact, completely untrue. Encryption of the data being transmitted requires that the other party be capable of decrypting the data. This is possible because the client and the server will agree on an encryption key (among other details) during the negotiation phase when the client attempts a secure connection. However, an attacker may be able to place themselves between the client and the server using a number of simple methods to trick a client machine into believing they are the server being contacted, i.e. a Man-In-The-Middle (MitM) Attack. This encryption key will be negotiated with the MitM and not the target server. This would allow the attacker to decrypt all the data sent by the client. Obviously, we therefore need the second goal - the ability to verify the identity of the server that the client is communicating with. Without that verification check, we have no way of telling the difference between a genuine target server and an MitM attacker.
 
 So, all four of the above security goals MUST be met before a secure communication can take place. They each work to perfectly complement the other three goals and it is the presence of all four that provides reliable and robust Transport Layer Security.
 
 Aside from the technical aspects of how Transport Layer Security works, the other facet of securely exchanging data lies in how well we apply that security. For example, if we allow a user to submit an application's login form data over HTTP we must then accept that an MitM is completely capable of intercepting that data and recording the user's login data for future use.
 
-This chapter covers the issue of Transport Layer Security from three angles.
+In judging the security quality of any implementation, we therefore have some very obvious measures drawn from the four goals I earlier mentioned:
+
+* Encryption: Does the implementation use a strong security standard and cipher suite?
+* Identity: Does the implementation verify the server's identity correctly and completely?
+* Data Tampering: Does the implementation fully protect user data for the duration of the user's session?
+* Replay Attacks: Does the implementation contain a method of preventing an attacker from recording requests and repetitively send them to the server to repeat a known action or effect?
+
+These questions are your core knowledge for this entire chapter. I will go into far more detail over the course of the chapter, but everything boils down to asking those questions and identifying the vulnerabilities where they fail to hold true.
+
+A second core understanding is what user data must be secured. Credit card details, personally identifiable information and passwords are obviously in need to securing. However, what about the user's session ID? If we protect passwords but fail to protect the session ID, an attacker is still fully capable of stealing the session cookie while in transit and performing a Session Hijacking attack to impersonate the user on their own PC. Protecting login forms alone is NEVER sufficient to protect a user's account or personal information. The best security is obtained by restricting the user session to HTTPS from the time they submit a login form to the time they end their session.
+
+You should now understanding why this chapter uses the phrase "insufficient". The problem in implementing SSL/TLS lies not in failing to use it, but failing to use it to a sufficient degree that user security is maximised.
+
+This chapter covers the issue of Insufficient Transport Layer Security from three angles.
 
 * Between a server-side application and a third-party server.
 * Between a client and the server-side application.
