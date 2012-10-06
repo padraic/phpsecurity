@@ -95,6 +95,9 @@ The ``CN_match`` parameter exposed by the SSL Content in PHP's ssl:// wrapper te
 
 The CURL extension, on the other hand, supports SANs out of the box so it is far more reliable and should be used in preference to PHP's built in HTTPS/FTPS wrappers. Using PHP Streams with this issue introduces a greater risk of erroneous behaviour which in turn would tempt impatient programmers to disable host verification altogether which is the last thing we want to see.
 
+Additional Risks?
+^^^^^^^^^^
+
 CURL Extension
 --------------
 
