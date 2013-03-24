@@ -65,7 +65,12 @@ All of this leads us to the following rule...
 
 ::
 
-    All processes which require non-trivial random numbers MUST attempt to use openssl_pseudo_random_bytes(). You MAY fallback to mcrypt_create_iv() with the source set to MCRYPT_DEV_URANDOM. You MAY also attempt to directly read bytes from /dev/urandom. If all else fails, and you have no other choice, you MUST instead generate a value by strongly mixing multiple sources of available random or secret values.
+    All processes which require non-trivial random numbers MUST attempt to use
+    openssl_pseudo_random_bytes(). You MAY fallback to mcrypt_create_iv() with
+    the source set to MCRYPT_DEV_URANDOM. You MAY also attempt to directly read
+    bytes from /dev/urandom. If all else fails, and you have no other choice,
+    you MUST instead generate a value by strongly mixing multiple sources of
+    available random or secret values.
 
 You can find a reference implementation of this rule at https://github.com/padraic/SecurityMultiTool/blob/master/library/SecurityMultiTool/Random/Generator.php. As is typical PHP Internals prefers to complicate programmer's lives rather than include something secure directly in PHP's core.
 
@@ -88,7 +93,12 @@ Imagine that we have located an application online which uses the following sour
 
     $token = hash('sha512', mt_rand());
  
-There are certainly more complicated means of generating a token but this is a nice variant with only one call to mt_rand() that is hashed using SHA512. In practice, if a programmer assumes that PHP's random value functions are "sufficiently random", they are far more likely to utilise a simple usage pattern so long as it doesn't involve the "cryptography" word. Non-cryptographic uses may include access tokens, CSRF tokens, API nonces and password reset tokens to name a few. Let me describe the characteristics of this vulnerable application in greater detail before we continue any further so we have some insight into the factors making this application vulnerable. This isn't an exhaustive list - vulnerable characteristics can vary from this recipe!
+There are certainly more complicated means of generating a token but this is a nice variant with only one call to mt_rand() that is hashed using SHA512. In practice, if a programmer assumes that PHP's random value functions are "sufficiently random", they are far more likely to utilise a simple usage pattern so long as it doesn't involve the "cryptography" word. Non-cryptographic uses may include access tokens, CSRF tokens, API nonces and password reset tokens to name a few. Let me describe the characteristics of this vulnerable application in greater detail before we continue any further so we have some insight into the factors making this application vulnerable.
+
+Vulnerable Application Characteristics
+--------------------------------------
+
+This isn't an exhaustive list - vulnerable characteristics can vary from this recipe!
 
 1. The server uses mod_php allowing multiple requests to be served by the same PHP process when using KeepAlive
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
