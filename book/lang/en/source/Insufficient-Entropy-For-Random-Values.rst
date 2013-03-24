@@ -441,7 +441,10 @@ Hunting For Entropy
 
 By itself, PHP is incapable of generating strong entropy. It doesn't even have a basic API for exposing OS level PRNGs that are reliable strong sources. Instead, you need to rely on the optional existence of the openssl and mcrypt extensions. Both of these extensions offer functions which are significant improvements over their leaky, predictable, low-entropy cousins.
 
-Unfortunately, because both of these extensions are optional, we have little choice but to rely on weak entropy sources in some circumstances as a last ditch fallback position. When this happens, we need to supplement the weak entropy of mt_rand() by including additional sources of uncertainty and mixing all of these together into a single pool from which we can extract pseudo-random bytes. This form of random generator which uses a strong entropy mixer has already been implemented in PHP by Anthony Ferarra in his RandomLib library on Github. Effectively, this is what programmers should be doing where possible.
+Unfortunately, because both of these extensions are optional, we have little choice but to rely on weak entropy sources in some circumstances as a last ditch fallback position. When this happens, we need to supplement the weak entropy of mt_rand() by including additional sources of uncertainty and mixing all of these together into a single pool from which we can extract pseudo-random bytes. This form of random generator which uses a strong entropy mixer has already been implemented in PHP by `Anthony Ferrara`_ in his `RandomLib library on Github`_. Effectively, this is what programmers should be doing where possible.
+
+.. _Anthony Ferrara: http://blog.ircmaxell.com
+.. _RandomLib library on Github: https://github.com/ircmaxell/RandomLib
 
 The one thing you want to avoid is the temptation to obscure your weak entropy by using hashing and complex mathmatical conversions. These are all readily repeatable by an attacker once they know which seeds to start from. These may impose a minor barrier by increasing the necessary computations an attacker must complete when brute forcing, but always remember that low entropy means less uncertainty - less uncertainty means fewer possibilities need to be brute forced. The only realistic solution is to increase the pool of entropy you're using with whatever is at hand.
 
