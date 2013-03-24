@@ -340,7 +340,7 @@ Taking the above example, we can see that by combining a Seed Recovery Attack ag
     }
 
 Adding More Entropy Will Save Us?
-=================================
+---------------------------------
 
 There is, of course, the option of adding extra entropy to uniqid() by setting the second parameter of the function to TRUE:
 
@@ -394,7 +394,7 @@ You'll notice that this means that all seeds used in PHP are interdependent and 
 The main problem here is, however, php_combined_lcg(). This is the underlying implementation of the userland lcg_value() function which is seeded once per PHP process and where knowledge of the seed makes its output predictable. If we can crack that particular nut, it's effectively game over.
 
 There's An App For That...
-==========================
+--------------------------
 
 I've spent much of this article trying to keep things practical, so better get back to that. Getting the two seeds used by php_combined_lcg() is not the easiest task because it's probably not going to be directly leaked (e.g. it's XOR'd into the seed for mt_rand()). The userland lcg_value() function is relatively unknown and programmers mostly rely on mt_rand() if they need to use a PHP PRNG. I don't want to preclude leaking the value of lcg_value() somewhere but it's just not a popular function. The two combined LCGs used also do not feature a seeding function (so you can't just go searching for mt_srand() calls to locate really bad seeding inherited from someone's legacy code). There is however one reliable output that does provide some direct output for brute forcing of the seeds - PHP session IDs.
 
