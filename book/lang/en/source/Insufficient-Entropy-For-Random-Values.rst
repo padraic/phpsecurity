@@ -161,12 +161,12 @@ This simulates the token from Request A (which is our SHA512 hash hiding the gen
 
 Here's what all the various options mean:
 
--m1700: Specifies the hashing algo where 1700 means SHA512.
---pw-min=1: Specifies the minimum input length of the hashed value.
---pw-max=10: Specifies the maximum input length of the hashed value (10 for mt_rand()).
--1?d: Specifies that we want a custom dictionary of only digits (i.e. 0-9)
--o ./seed.txt: Output file where results will be written. None are printed to screen so don't forget it!
-?d?d?d?d?d?d?d?d?d?d: The mask showing the format to use (all digits to max of 10).
++ -m1700: Specifies the hashing algo where 1700 means SHA512.
++ --pw-min=1: Specifies the minimum input length of the hashed value.
++ --pw-max=10: Specifies the maximum input length of the hashed value (10 for mt_rand()).
++ -1?d: Specifies that we want a custom dictionary of only digits (i.e. 0-9)
++ -o ./seed.txt: Output file where results will be written. None are printed to screen so don't forget it!
++ ?d?d?d?d?d?d?d?d?d?d: The mask showing the format to use (all digits to max of 10).
 
 If all works correctly, and your GPU does not explode, Hashcat will figure out what random number was hashed in a couple of minutes. Yes, minutes. I spent some time earlier explaining how entropy works and here you can see it in practice. The mt_rand() function is limited to so few possibilities that the SHA512 hashes of all possible values can be computed in a very short time. The use of hashing to obscure the output from mt_rand() was basically useless.
 
