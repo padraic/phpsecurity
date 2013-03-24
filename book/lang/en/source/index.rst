@@ -16,6 +16,7 @@ Contents:
     Injection-Attacks
     Cross-Site-Scripting-(XSS)
     Transport-Layer-Security-(HTTPS-SSL-and-TLS)
+    Insufficient-Entropy-For-Random-Values
 
 Articles:
 
