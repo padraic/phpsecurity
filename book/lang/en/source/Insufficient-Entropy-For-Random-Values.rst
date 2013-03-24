@@ -72,7 +72,9 @@ All of this leads us to the following rule...
     you MUST instead generate a value by strongly mixing multiple sources of
     available random or secret values.
 
-You can find a reference implementation of this rule at https://github.com/padraic/SecurityMultiTool/blob/master/library/SecurityMultiTool/Random/Generator.php. As is typical PHP Internals prefers to complicate programmer's lives rather than include something secure directly in PHP's core.
+You can find a reference implementation of this rule in `the SecurityMultiTool reference library`_. As is typical PHP Internals prefers to complicate programmer's lives rather than include something secure directly in PHP's core.
+
+.. _the SecurityMultiTool reference library: https://github.com/padraic/SecurityMultiTool/blob/master/library/SecurityMultiTool/Random/Generator.php
 
 Enough theory, let's actually look into how we can attack an application with this information.
 
@@ -458,11 +460,9 @@ Anthony's RandomLib generates random bytes by mixing various entropy sources and
      *  - generateString() to map values to a specific character range
      */
     $factory = new \RandomLib\Factory;
-    $generator = $factory->getHighStrengthGenerator();
+    $generator = $factory->getMediumStrengthGenerator();
     $token = hash('sha512', $generator->generate(32));
 
-If you are already comfortably using the openssl or mcrypt extensions, you could also use a lower strength RandomLib generator to slot into pre-existing code to replace calls to mt_rand(), rand(), lcg_value() and uniqid() where required as a final fallback position.
+Arguably, due to RandomLib's footprint and the ready availability of the OpenSSL and Mcrypt extensions, you can instead use RandomLib as a fallback proposition as used in `the SecurityMultiTool PRNG generator class`_.
 
-.. code-block:: php
-
-    $generator = $factory->getLowStrengthGenerator();
+.. _the SecurityMultiTool PRNG generator class: https://github.com/padraic/SecurityMultiTool/blob/master/library/SecurityMultiTool/Random/Generator.php
