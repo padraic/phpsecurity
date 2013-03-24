@@ -298,9 +298,9 @@ Indeed, looking at the C code, this accurate system timestamp is never obscured 
 
 .. code-block:: php
 
-    echo uniqid(), PHP_EOL;
-    echo uniqid('prefix-'), PHP_EOL;
-    echo uniqid('prefix-', true), PHP_EOL;
+    echo uniqid(), PHP_EOL;                 // 514ee7f81c4b8
+    echo uniqid('prefix-'), PHP_EOL;        // prefix-514ee7f81c746
+    echo uniqid('prefix-', true), PHP_EOL;  // prefix-514ee7f81c8993.39593322
 
 Brute Force Attacking Unique IDs
 ================================
