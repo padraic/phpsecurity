@@ -28,9 +28,9 @@ Besides files, and of relevance to our current topic of discussion, we can also 
 
     file_get_contents('http://www.example.com');
 
-Since filesystem functions such as ``file_get_contents()`` support HTTP wrapped streams, they bake into PHP a very simple to access HTTP client if you don't feel the need to expand into using a dedicated HTTP client library like Buzz or Zend Framework's ``\Zend\Http\Client`` classes. In order for this to work, you'll need to enable the ``php.ini`` file's ``allow_url_fopen`` configuration option. This option is enabled by default.
+Since filesystem functions such as ``file_get_contents()`` support HTTP wrapped streams, they bake into PHP a very simple to access HTTP client if you don't feel the need to expand into using a dedicated HTTP client library like Guzzle, Buzz or Zend Framework's ``\Zend\Http\Client`` classes. In order for this to work, you'll need to enable the ``php.ini`` file's ``allow_url_fopen`` configuration option. This option is enabled by default.
 
-Of course, the ``allow_url_fopen`` setting also carries a separate risk of enabling Remote File Execution, Access Control Bypass or Information Disclosure attacks. If an attacker can inject a remote URI of their choosing into a file function they could manipulate an application into executing, storing or displaying the fetched file including from any untrusted remote source. It's also worth bearing in mind that such file fetches would originate from localhost and thus be capable of bypassing access controls based on local server restrictions. As such, while ``allow_url_fopen`` is enabled by default, you should disable it without hesitation.
+Of course, the ``allow_url_fopen`` setting also carries a separate risk of enabling Remote File Execution, Access Control Bypass or Information Disclosure attacks. If an attacker can inject a remote URI of their choosing into a file function they could manipulate an application into executing, storing or displaying the fetched file including those from any untrusted remote source. It's also worth bearing in mind that such file fetches would originate from localhost and thus be capable of bypassing access controls based on local server restrictions. As such, while ``allow_url_fopen`` is enabled by default, you should disable it without hesitation to maximise security.
 
 
 Back to using PHP Streams as a simple HTTP client (which you now know is NOT recommended), things get interesting when you try the following:
@@ -40,7 +40,7 @@ Back to using PHP Streams as a simple HTTP client (which you now know is NOT rec
     $url = 'https://api.twitter.com/1/statuses/public_timeline.json';
     $result = file_get_contents($url);
 
-The above is a simple unauthenticated request to the Twitter API over HTTPS. It also has a serious flaw. PHP uses an ``SSL Context`` for requests made using the HTTPS (https://) and FTPS (ftps://) wrappers. The ``SSL Context`` offers a lot of settings for SSL/TLS and their default values are wholly insecure. The above example can be rewritten as follows to show how a default set of ``SSL Context`` options can be plugged into ``file_get_contents()`` as a parameter:
+The above is a simple unauthenticated request to the (former) Twitter API 1.0 over HTTPS. It also has a serious flaw. PHP uses an ``SSL Context`` for requests made using the HTTPS (https://) and FTPS (ftps://) wrappers. The ``SSL Context`` offers a lot of settings for SSL/TLS and their default values are wholly insecure. The above example can be rewritten as follows to show how a default set of ``SSL Context`` options can be plugged into ``file_get_contents()`` as a parameter:
 
 .. code-block:: php
 
@@ -58,10 +58,13 @@ As described earlier in this chapter, failing to securely configure SSL/TLS leav
     $url = 'https://api.twitter.com/1/statuses/public_timeline.json';
     $contextOptions = array(
         'ssl' => array(
-            'verify_peer'   => TRUE,
-            'cafile'        => __DIR__ . '/cacert.pem',
+            'verify_peer'   => true,
+            'cafile'        => '/etc/ssl/certs/ca-certificates.crt',
             'verify_depth'  => 5,
-            'CN_match'      => 'api.twitter.com'
+            'CN_match'      => 'api.twitter.com',
+            'disable_compression' => true,
+            'SNI_enabled'         => true,
+            'ciphers'             => 'ALL!EXPORT!EXPORT40!EXPORT56!aNULL!LOW!RC4'
         )
     );
     $sslContext = stream_context_create($contextOptions);
@@ -87,12 +90,28 @@ The previous three options focused on verifying the certificate presented by the
 
 While such a valid certificate used by an attacker would contain identity information specific to the attacker (a precondition of getting one!), please bear in mind that there are undoubtedly any number of valid CA-signed certificates, complete with matching private keys, available to a knowledgeable attacker. These may have been stolen from another company or slipped passed a trusted CA's radar as happened in 2011 when DigiNotor notoriously (sorry, couldn't resist) issued a certificate for ``google.com`` to an unknown party who went on to employ it in MitM attacks predominantly against Iranian users.
 
+* disable_compression
+
+This option was introduced in PHP 5.4.13 and it serves as a defence against CRIME attacks and other padded oracle derived attacks such as BEAST. At the time of writing, it had been available for 10 months and locating a single example of its use in open source PHP was practically a quest in extreme patience.
+
+* SNI_enabled
+
+Enables support for Server Name Indication where any single IP address may be configured to present multiple SSL certificates rather than be restricted to a single certificate for all websites or non-HTTP services hosted at that IP.
+
+* ciphers
+
+This setting allows programmers to indicate which ciphers should or should not be used when establishing SSL/TLS connections. The default list of ciphers supplied by the openssl extension contain a number of unsafe ciphers which should be disabled unless absolutely necessary. The above cipher list, in a syntax accepted by openssl, was implemented by cURL during January 2014. An alternative cipher list has been suggested by Mozilla which may be better since it emphasises Perfect Forward Secrecy which is an emerging best practice approach. The Mozilla list is a bit longer:
+
+::
+
+    ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:ECDHE-RSA-RC4-SHA:ECDHE-ECDSA-RC4-SHA:AES128:AES256:RC4-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK
+
 Limitations
 ^^^^^^^^^^^
 
 As described above, verifying that the certificate presented by a server is valid for the host in the URL that you're using ensures that a MitM cannot simply present any valid certificate they can purchase or illegally obtain. This is an essential step, one of four, to ensuring your connection is absolutely secure.
 
-The ``CN_match`` parameter exposed by the ``SSL Context`` in PHP's HTTPS wrapper tells PHP to perform this matching exercise but it has a downside. At the time of writing, the matching used will only check the Common Name (CN) of the SSL certificate but ignore the equally valid Subject Alternative Names (SANs) field if defined by the certificate. An SAN lets you protect multiple domain names with a single SSL certificate so it's extremely useful and supported by all modern browsers. Since PHP does not currently support SAN matching, connections over SSL/TLS to a domain secured using such a certificate will fail.
+The ``CN_match`` parameter exposed by the ``SSL Context`` in PHP's HTTPS wrapper tells PHP to perform this matching exercise but it has a downside. At the time of writing, the matching used will only check the Common Name (CN) of the SSL certificate but ignore the equally valid Subject Alternative Names (SANs) field if defined by the certificate. An SAN lets you protect multiple domain names with a single SSL certificate so it's extremely useful and supported by all modern browsers. Since PHP does not currently support SAN matching, connections over SSL/TLS to a domain secured using such a certificate will fail. SAN support for PHP will be introduced in PHP 5.6.
 
 The CURL extension, on the other hand, supports SANs out of the box so it is far more reliable and should be used in preference to PHP's built in HTTPS/FTPS wrappers. Using PHP Streams with this issue introduces a greater risk of erroneous behaviour which in turn would tempt impatient programmers to disable host verification altogether which is the very last thing we want to see.
 
@@ -104,7 +123,7 @@ Many HTTP clients in PHP will offer both a CURL adapter and a default PHP Socket
 PHP Sockets use the same ``SSL Context`` resource as PHP Streams so it inherits all of the problems and limitations described earlier. This has the side-effect that many major HTTP clients are themselves, by default, likely to be unreliable and less safe than they should be. Such client libraries should, where possible, be configured to use their CURL adapter if available. You should also review such clients to ensure they are not disabling (or forgetting to enable) the correct approach to secure SSL/TLS.
 
 Additional Risks?
-^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 CURL Extension
 --------------
@@ -121,6 +140,8 @@ Since it requires no special treatment, you can perform a similar Twitter API ca
     $result = curl_exec($req);
 
 This is why my recommendation to you is to prefer CURL for HTTPS requests. It's secure by default whereas PHP Streams is most definitely not. If you feel comfortable setting up SSL context options, then feel free to use PHP Streams. Otherwise, just use CURL and avoid the headache. At the end of the day, CURL is safer, requires less code, and is less likely to suffer a human-error related failure in its SSL/TLS security.
+
+At the time of writing, PHP 5.6 has reached an alpha1 release. The final release of PHP 5.6 will introduce more secure defaults for PHP streams and socket connections over SSL/TLS. These changes will not be backported to PHP 5.3, 5.4 or 5.5. As such, all programmers will need to implement secure default settings as a concious choice until such time as PHP 5.6 is a minimum requirement for their code.
 
 Of course, if the CURL extension was enabled without the location of trusted certificate bundle being configured, the above example would still fail. For libraries intending to be publicly distributed, the programmer will need to follow a sane pattern which enforces secure behaviour:
 
